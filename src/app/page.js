@@ -253,7 +253,7 @@ export default function Home() {
           </p>
           <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '2.5rem', flexWrap: 'wrap' }}>
             {[
-              { number: '7.76', label: 'B.Tech CGPA' },
+              { number: '7.98', label: 'B.Tech CGPA' },
               { number: '200+', label: 'DSA Questions' },
               { number: '3+', label: 'Projects Built' },
             ].map((stat, i) => (
@@ -373,7 +373,7 @@ export default function Home() {
               <div style={{ position: 'absolute', width: '12px', height: '12px', background: '#FF8E3C', borderRadius: '50%', left: '-7px', top: '5px' }}></div>
               <h4 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.2rem', margin: '0', fontWeight: 700, color: theme.textPrimary }}>Lovely Professional University</h4>
               <p style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '0.95rem', color: theme.textLight, margin: '0.25rem 0 0.5rem 0', fontWeight: 500 }}>B.Tech - Computer Science and Engineering | Aug 2023 - Present</p>
-              <p style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '0.95rem', color: theme.textSecondary, margin: '0', fontWeight: 500 }}>CGPA: 7.76</p>
+              <p style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '0.95rem', color: theme.textSecondary, margin: '0', fontWeight: 500 }}>CGPA: 7.98</p>
             </div>
             <div style={{ paddingLeft: '1.5rem', borderLeft: `2px solid ${theme.border}`, position: 'relative' }}>
               <div style={{ position: 'absolute', width: '12px', height: '12px', background: theme.border, borderRadius: '50%', left: '-7px', top: '5px' }}></div>
