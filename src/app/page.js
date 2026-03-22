@@ -11,7 +11,7 @@ import { useInView } from 'react-intersection-observer';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const theme = {
     bg: isDarkMode ? '#111111' : '#FFFDF5',
     navBg: isDarkMode ? 'rgba(17,17,17,0.8)' : 'rgba(255,253,245,0.8)',

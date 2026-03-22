@@ -29,7 +29,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${nunito.variable} ${syne.variable} ${dancingScript.variable} font-sans antialiased text-gray-800 bg-[#FFFDF5]`}>
+      <body className={`${nunito.variable} ${syne.variable} ${dancingScript.variable} font-sans antialiased text-[#F5F5F7] bg-[#111111]`}>
         {children}
       </body>
     </html>
