@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,6 +12,14 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const theme = {
     bg: isDarkMode ? '#111111' : '#FFFDF5',
     navBg: isDarkMode ? 'rgba(17,17,17,0.8)' : 'rgba(255,253,245,0.8)',
@@ -93,7 +101,7 @@ export default function Home() {
         .to(imageStackRef.current, {x: '0vw', duration: 0.4, ease: 'power2.inOut'}, 3.8)
         .to(hologramRef.current, {opacity: 0, y: -30, duration: 0.4, ease: 'power2.inOut'}, 3.8)
         .to(magicBgRef.current, {opacity: 0, duration: 0.4, ease: 'power2.inOut'}, 3.8)
-        .to(casualRef.current, {opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'power2.inOut'}, 3.8)
+        .to(casualRef.current, {opacity: 1, y: 0, scale: 0.75, transformOrigin: 'left center', duration: 0.4, ease: 'power2.inOut'}, 3.8)
 
       // Scene 6 (4.0) -> Education/Experience
         .to(casualRef.current, {opacity: 0, y: -30, duration: 0.4, ease: 'power2.inOut'}, 4.8)
@@ -118,8 +126,8 @@ export default function Home() {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingRight: '5vw',
+    justifyContent: isMobile ? 'center' : 'flex-end',
+    paddingRight: isMobile ? '0' : '5vw',
     overflow: 'hidden',
   };
 
@@ -134,10 +142,10 @@ export default function Home() {
 
   const textBlockStyle = {
     position: 'relative',
-    zIndex: 10,
+    zIndex: 15,
     textAlign: 'left',
-    padding: '0 2rem',
-    width: '50%',
+    padding: isMobile ? '0 2rem' : '0 2rem', // keep it
+    width: isMobile ? '100%' : '50%',
     maxWidth: '650px',
   };
 
@@ -148,6 +156,7 @@ export default function Home() {
       tech: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT', 'Zod'],
       color: '#60a5fa',
       image: 'travelverse.png',
+      link: 'https://github.com/reallymanya/PackYourBags/tree/main/Travel_Verse_MERN',
     },
     {
       title: 'Second Brain',
@@ -155,6 +164,7 @@ export default function Home() {
       tech: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Tailwind CSS'],
       color: '#FF8E3C',
       image: 'secondbrain.png',
+      link: 'https://github.com/reallymanya/SecondBrain',
     },
     {
       title: 'Heritage Museum',
@@ -162,6 +172,7 @@ export default function Home() {
       tech: ['HTML', 'Tailwind CSS', 'JavaScript', 'PHP', 'MySQL', 'Razorpay API'],
       color: '#a78bfa',
       image: 'heritage.png',
+      link: 'https://github.com/reallymanya/Heritage-museum',
     },
   ];
 
@@ -172,7 +183,7 @@ export default function Home() {
         <a href="#scene-1" style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.2rem', fontWeight: 800, color: theme.textPrimary, textDecoration: 'none', letterSpacing: '-0.02em' }}>
           Manya<span style={{ fontFamily: 'var(--font-dancing), cursive', color: '#FF8E3C', marginLeft: '0.25rem', fontSize: '110%' }}>Takkar</span>
         </a>
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+        <div style={{ display: isMobile ? 'none' : 'flex', gap: '2rem', alignItems: 'center' }}>
           {[
             { label: 'Skills', href: '#scene-3' },
             { label: 'Projects', href: '#scene-4' },
@@ -193,7 +204,7 @@ export default function Home() {
       </nav>
 
       {/* ── PINNED IMAGE STACK ── */}
-      <div ref={imageStackRef} style={{ position: 'absolute', top: 0, left: 0, width: '45%', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 5 }}>
+      <div ref={imageStackRef} style={{ position: 'absolute', top: 0, left: 0, width: isMobile ? '100%' : '45%', opacity: isMobile ? 0.15 : 1, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 0 }}>
         <div ref={magicBgRef} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'radial-gradient(ellipse at 30% center, #0f172a 0%, #020617 100%)', opacity: 0, zIndex: 0, pointerEvents: 'none' }} />
         <div style={{ position: 'relative', width: 'min(420px, 35vw)', height: 'min(500px, 65vh)', zIndex: 1 }}>
           <div ref={heroRef} style={{ ...imageWrapperBase, opacity: 1 }}><Image src="/characters/desk-coding.png" alt="Coding at desk" fill style={{ objectFit: 'contain' }} priority unoptimized /></div>
@@ -232,6 +243,11 @@ export default function Home() {
                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
               </svg>
             </a>
+            <a href="https://leetcode.com/u/Manyaa_28/" target="_blank" rel="noreferrer" style={{ color: 'inherit', transition: 'transform 0.3s ease, color 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = '#FF8E3C'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = 'inherit'; }} aria-label="LeetCode">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16.102 17.93l-2.697 2.607c-.466.467-1.111.662-1.823.662s-1.357-.195-1.824-.662l-4.332-4.363c-.467-.467-.702-1.15-.702-1.863s.235-1.396.702-1.863l4.332-4.363c.467-.467 1.112-.662 1.824-.662s1.357.195 1.823.662l2.697 2.606c.514.515 1.365.497 1.9-.046.536-.543.555-1.396.041-1.91l-2.964-2.864c-1.072-1.07-2.58-1.522-4.135-1.522s-3.064.453-4.136 1.522l-4.478 4.51c-1.072 1.07-1.637 2.55-1.637 4.103s.565 3.033 1.637 4.103l4.478 4.51c1.072 1.07 2.58 1.522 4.136 1.522s3.063-.453 4.135-1.522l2.964-2.865c.514-.514.495-1.366-.041-1.91-.535-.542-1.386-.56-1.9-.045zm1.902-7.535h-8.006c-.718 0-1.3.582-1.3 1.3s.582 1.3 1.3 1.3h8.006c.718 0 1.3-.582 1.3-1.3s-.582-1.3-1.3-1.3z"/>
+              </svg>
+            </a>
           </div>
         </div>
       </section>
@@ -249,7 +265,7 @@ export default function Home() {
             into digital realities.
           </h2>
           <p style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '1rem', color: theme.textSecondary, lineHeight: 1.8, maxWidth: '460px', marginBottom: '2rem' }}>
-            Currently pursuing my B.Tech in CSE at Lovely Professional University. I specialize in building sophisticated web architectures using the MERN stack and Next.js. I believe in writing modular, readable, and highly maintainable code.
+            Pursuing a B.Tech in Computer Science and Engineering at Lovely Professional University, specializing in developing scalable and efficient web applications using the MERN stack. Focused on clean architecture, modular design, and maintainable code practices.
           </p>
           <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '2.5rem', flexWrap: 'wrap' }}>
             {[
@@ -277,8 +293,8 @@ export default function Home() {
             <span style={{ fontFamily: 'var(--font-dancing), cursive', color: '#FF8E3C', fontWeight: 700, fontSize: '115%' }}>love using</span>
           </h2>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'flex-start', maxWidth: '420px' }}>
-            {['C++', 'JavaScript', 'TypeScript', 'PHP', 'SQL', 'HTML', 'CSS', 'Tailwind CSS', 'NodeJS', 'React', 'MySQL', 'MongoDB', 'Postman'].map((tech, i) => (
-              <span key={i} style={{ fontFamily: 'var(--font-syne), sans-serif', padding: '0.5rem 1.2rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 600, border: `1.5px solid ${theme.border}`, color: theme.textPrimary, background: theme.cardBg, backdropFilter: 'blur(8px)', letterSpacing: '0.02em', transition: 'all 0.3s ease' }}>
+            {['C++', 'JavaScript', 'TypeScript', 'PHP', 'SQL', 'HTML', 'CSS', 'Tailwind CSS', 'NodeJS', 'React', 'Next.js', 'MySQL', 'MongoDB', 'Postman'].map((tech, i) => (
+              <span key={i} style={{ display: 'inline-block', fontFamily: 'var(--font-syne), sans-serif', padding: '0.5rem 1.2rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 600, border: `1.5px solid ${theme.border}`, color: theme.textPrimary, background: theme.cardBg, backdropFilter: 'blur(8px)', letterSpacing: '0.02em', transition: 'all 0.3s ease', cursor: 'default' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 15px rgba(255,142,60,0.12)'; e.currentTarget.style.borderColor = '#FF8E3C'; e.currentTarget.style.color = '#FF8E3C'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = theme.border; e.currentTarget.style.color = theme.textPrimary; }}>
                 {tech}
               </span>
             ))}
@@ -287,48 +303,74 @@ export default function Home() {
       </section>
 
       <section id="scene-4" style={{ position: 'relative', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '15vh', left: '8vw', zIndex: 15 }}>
+        <div style={{ position: isMobile ? 'relative' : 'absolute', top: isMobile ? 0 : '15vh', left: isMobile ? '2rem' : '8vw', zIndex: 15, marginTop: isMobile ? '2rem' : 0 }}>
           <span style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '0.9rem', fontWeight: 800, color: '#FFF', backgroundColor: '#3b82f6', padding: '0.4rem 0.8rem', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'inline-block', transform: 'rotate(-4deg) translateY(12px) translateX(5px)', position: 'relative', zIndex: 2 }}>Selected</span>
           <h2 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: 'clamp(3rem, 6vw, 4.5rem)', fontWeight: 900, color: theme.textPrimary, letterSpacing: '-0.02em', lineHeight: 1, marginTop: '0.2rem', position: 'relative', zIndex: 1 }}>Projects</h2>
         </div>
         
+        <div style={{ display: isMobile ? 'flex' : 'block', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '2rem' : 0, width: '100%', padding: isMobile ? '20vh 10vw' : 0, height: isMobile ? '100vh' : 'auto', overflowY: isMobile ? 'auto' : 'visible' }}>
         {/* Project 1 */}
-        <div style={{ position: 'absolute', top: '12vh', right: '8vw', width: 'clamp(260px, 22vw, 340px)', zIndex: 15, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.8rem', transition: 'transform 0.4s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}>
-          <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', background: projects[0].color, overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Image src={`/projects/${projects[0].image}`} alt={projects[0].title} fill style={{ objectFit: 'contain' }} unoptimized />
+        <div style={{ position: isMobile ? 'relative' : 'absolute', top: isMobile ? 0 : '12vh', right: isMobile ? 0 : '8vw', width: isMobile ? '100%' : 'clamp(260px, 22vw, 340px)', zIndex: 15, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.8rem', transition: 'transform 0.4s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.firstChild.style.boxShadow = '0 0 0 2px #3b82f6, 0 8px 20px rgba(59,130,246,0.2)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.firstChild.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)'; }}>
+          <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', border: '1px solid #3b82f6', background: 'transparent', overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'box-shadow 0.3s ease' }}>
+            <Image src={`/${projects[0].image}`} alt={projects[0].title} fill style={{ objectFit: 'contain' }} unoptimized />
           </div>
           <div>
             <h3 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.25rem', fontWeight: 800, color: theme.textPrimary, margin: '0 0 0.3rem 0', transition: 'color 0.3s ease' }}>{projects[0].title}</h3>
             <p style={{ fontSize: '0.9rem', color: theme.textSecondary, margin: 0, fontWeight: 500, transition: 'color 0.3s ease' }}>{projects[0].description}</p>
+            {projects[0].link !== '#' && (
+              <a href={projects[0].link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'var(--font-syne), sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#FF8E3C', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.8rem', transition: 'transform 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}>
+                View Project
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            )}
           </div>
         </div>
 
         {/* Project 2 */}
-        <div style={{ position: 'absolute', bottom: '12vh', left: '8vw', width: 'clamp(260px, 22vw, 340px)', zIndex: 15, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.8rem', transition: 'transform 0.4s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}>
-          <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', background: projects[1].color, overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Image src={`/projects/${projects[1].image}`} alt={projects[1].title} fill style={{ objectFit: 'contain' }} unoptimized />
+        <div style={{ position: isMobile ? 'relative' : 'absolute', bottom: isMobile ? 0 : '12vh', left: isMobile ? 0 : '8vw', width: isMobile ? '100%' : 'clamp(260px, 22vw, 340px)', zIndex: 15, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.8rem', transition: 'transform 0.4s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.firstChild.style.boxShadow = '0 0 0 2px #3b82f6, 0 8px 20px rgba(59,130,246,0.2)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.firstChild.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)'; }}>
+          <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', border: '1px solid #3b82f6', background: 'transparent', overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'box-shadow 0.3s ease' }}>
+            <Image src={`/${projects[1].image}`} alt={projects[1].title} fill style={{ objectFit: 'contain' }} unoptimized />
           </div>
           <div>
             <h3 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.25rem', fontWeight: 800, color: theme.textPrimary, margin: '0 0 0.3rem 0', transition: 'color 0.3s ease' }}>{projects[1].title}</h3>
             <p style={{ fontSize: '0.9rem', color: theme.textSecondary, margin: 0, fontWeight: 500, transition: 'color 0.3s ease' }}>{projects[1].description}</p>
+            {projects[1].link !== '#' && (
+              <a href={projects[1].link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'var(--font-syne), sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#FF8E3C', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.8rem', transition: 'transform 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}>
+                View Project
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            )}
           </div>
         </div>
 
         {/* Project 3 */}
-        <div style={{ position: 'absolute', bottom: '12vh', right: '8vw', width: 'clamp(260px, 22vw, 340px)', zIndex: 15, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.8rem', transition: 'transform 0.4s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}>
-          <div style={{ width: '100%', aspectRatio: '4/3', borderRadius: '24px', background: projects[2].color, overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Image src={`/projects/${projects[2].image}`} alt={projects[2].title} fill style={{ objectFit: 'cover' }} unoptimized />
+        <div style={{ position: isMobile ? 'relative' : 'absolute', bottom: isMobile ? 0 : '12vh', right: isMobile ? 0 : '8vw', width: isMobile ? '100%' : 'clamp(260px, 22vw, 340px)', zIndex: 15, cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '0.8rem', transition: 'transform 0.4s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.firstChild.style.boxShadow = '0 0 0 2px #3b82f6, 0 8px 20px rgba(59,130,246,0.2)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.firstChild.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)'; }}>
+          <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '16px', border: '1px solid #3b82f6', background: 'transparent', overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'box-shadow 0.3s ease' }}>
+            <Image src={`/${projects[2].image}`} alt={projects[2].title} fill style={{ objectFit: 'contain' }} unoptimized />
           </div>
           <div>
             <h3 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.25rem', fontWeight: 800, color: theme.textPrimary, margin: '0 0 0.3rem 0', transition: 'color 0.3s ease' }}>{projects[2].title}</h3>
             <p style={{ fontSize: '0.9rem', color: theme.textSecondary, margin: 0, fontWeight: 500, transition: 'color 0.3s ease' }}>{projects[2].description}</p>
+            {projects[2].link !== '#' && (
+              <a href={projects[2].link} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'var(--font-syne), sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#FF8E3C', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '0.8rem', transition: 'transform 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateX(4px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateX(0)'}>
+                View Project
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            )}
           </div>
         </div>
 
+      </div>
       </section>
 
-      <section id="scene-5" style={{...sectionStyle, justifyContent: 'center', padding: '0 5vw', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
-        <div style={{ width: '50%', maxWidth: '650px', textAlign: 'left' }}>
+      <section id="scene-5" style={{...sectionStyle, overflow: 'visible', justifyContent: 'center', padding: '6vh 5vw 4rem', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+        <div style={{ width: isMobile ? '100%' : '65%', maxWidth: '900px', textAlign: 'left', padding: isMobile ? '0 1rem' : 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
             <div style={{ width: '2rem', height: '2px', background: '#FF8E3C' }} />
             <span style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#FF8E3C' }}>Milestones</span>
@@ -337,21 +379,61 @@ export default function Home() {
             Certifications & {' '}
             <span style={{ fontFamily: 'var(--font-dancing), cursive', color: '#FF8E3C', fontWeight: 700, fontSize: '115%' }}>Achievements</span>
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ background: theme.cardBg, padding: '1.5rem', borderRadius: '8px', border: `1px solid ${theme.border}` }}>
-              <h4 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 700 }}>Certifications</h4>
-              <ul style={{ paddingLeft: '1.2rem', fontFamily: 'var(--font-nunito), sans-serif', color: theme.textSecondary, fontSize: '0.95rem', lineHeight: 1.6 }}>
-                <li>Responsive Web Design - FreeCodeCamp (Nov 2023)</li>
-                <li>The Bits and Bytes of Computer Networking - Coursera (Sep 2024)</li>
-                <li>Master GenAI and GenAI Tools - Udemy (Sep 2025)</li>
-              </ul>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div>
+              <h4 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.3rem', marginBottom: '1rem', fontWeight: 700, color: theme.textPrimary }}>Certifications</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.2rem' }}>
+                {[
+                  { title: 'Responsive Web Design', issuer: 'FreeCodeCamp', date: 'Nov 2023', icon: '💻', link: 'https://www.freecodecamp.org/certification/fccd81d0961-774a-4191-a534-0d92b7c679b6/responsive-web-design', image: '/fcc.png' },
+                  { title: 'Computer Networking', issuer: 'Coursera', date: 'Sep 2024', icon: '🌐', link: 'https://www.coursera.org/account/accomplishments/verify/FCVKNEFQ0FIJ', image: '/network.png' },
+                  { title: 'Master GenAI Tools', issuer: 'Udemy', date: 'Sep 2025', icon: '🤖', link: 'https://ude.my/UC-4bc7c36b-1f04-490f-ab67-c5f68088e578', image: '/udemy.png' }
+                ].map((cert, i) => (
+                  <a key={i} href={cert.link} target={cert.link !== '#' ? "_blank" : "_self"} rel="noreferrer" style={{ textDecoration: 'none', padding: '1.2rem', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '12px', transition: 'transform 0.3s ease, box-shadow 0.3s ease', cursor: 'pointer', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                    {cert.image ? (
+                      <div style={{ width: '100%', aspectRatio: '16/9', marginBottom: '1rem', borderRadius: '6px', overflow: 'hidden', background: theme.border, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={cert.image} alt={cert.title} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '0.2rem' }} />
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '1.8rem', marginBottom: '1rem' }}>{cert.icon}</div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1rem', fontWeight: 700, color: theme.textPrimary, lineHeight: 1.3, marginBottom: '0.3rem' }}>{cert.title}</div>
+                      {cert.link !== '#' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: '#FF8E3C', marginLeft: '0.5rem', marginTop: '0.1rem' }}>
+                          <path d="M7 17l9.2-9.2M17 17V7H7"/>
+                        </svg>
+                      )}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '0.85rem', color: theme.textSecondary }}>{cert.issuer}</div>
+                    <div style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '0.75rem', color: '#FF8E3C', marginTop: 'auto', paddingTop: '0.8rem', fontWeight: 600 }}>{cert.date}</div>
+                  </a>
+                ))}
+              </div>
             </div>
-            <div style={{ background: theme.cardBg, padding: '1.5rem', borderRadius: '8px', border: `1px solid ${theme.border}` }}>
-              <h4 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 700 }}>Achievements</h4>
-              <ul style={{ paddingLeft: '1.2rem', fontFamily: 'var(--font-nunito), sans-serif', color: theme.textSecondary, fontSize: '0.95rem', lineHeight: 1.6 }}>
-                <li>Solved 200+ DSA Problems on LeetCode and CodingNinjas.</li>
-                <li>Participated in Code Off Duty Web Hackathon.</li>
-              </ul>
+            <div>
+              <h4 style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1.3rem', marginBottom: '1rem', fontWeight: 700, color: theme.textPrimary }}>Achievements</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.2rem' }}>
+                {[
+                  { title: 'LeetCode Statistics', platform: 'Solved 150+ DSA Problems & Heatmap', icon: '🚀', image: 'https://leetcard.jacoblin.cool/Manyaa_28?theme=dark&font=Syne&ext=heatmap', link: 'https://leetcode.com/u/Manyaa_28/' },
+                  { title: 'Web Hackathon Participant', platform: 'Code Off Duty', icon: '🏆', link: '#', image: '/codeoffduty.jpg' }
+                ].map((ach, i) => (
+                  <a key={i} href={ach.link} target={ach.link !== '#' ? "_blank" : "_self"} rel="noreferrer" style={{ textDecoration: 'none', padding: '1.2rem', background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: '12px', transition: 'transform 0.3s ease, box-shadow 0.3s ease', cursor: 'pointer', backdropFilter: 'blur(10px)', color: 'inherit' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.05)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                    {ach.image ? (
+                      ach.title.includes('LeetCode') ? (
+                        <img src={ach.image} alt={ach.title} style={{ width: '100%', marginBottom: '0.8rem', borderRadius: '8px' }} />
+                      ) : (
+                        <div style={{ width: '100%', aspectRatio: '16/9', marginBottom: '1rem', borderRadius: '6px', overflow: 'hidden', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <img src={ach.image} alt={ach.title} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '0.2rem' }} />
+                        </div>
+                      )
+                    ) : (
+                      <div style={{ fontSize: '1.8rem', marginBottom: '0.8rem' }}>{ach.icon}</div>
+                    )}
+                    <div style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: '1rem', fontWeight: 700, color: theme.textPrimary, lineHeight: 1.3, marginBottom: '0.3rem' }}>{ach.title}</div>
+                    <div style={{ fontFamily: 'var(--font-nunito), sans-serif', fontSize: '0.85rem', color: theme.textSecondary }}>{ach.platform}</div>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -401,7 +483,7 @@ export default function Home() {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '1.5rem' }}>
              <p style={{fontFamily: 'var(--font-nunito), sans-serif', fontWeight: 500, fontSize: '0.95rem'}}>Email: <a href="mailto:manyatakkar.01@gmail.com" style={{color: '#FF8E3C', textDecoration: 'none'}}>manyatakkar.01@gmail.com</a></p>
-             <p style={{fontFamily: 'var(--font-nunito), sans-serif', fontWeight: 500, fontSize: '0.95rem'}}>Phone: <span style={{color: theme.textSecondary}}>+91-7983359078</span></p>
+             <p style={{fontFamily: 'var(--font-nunito), sans-serif', fontWeight: 500, fontSize: '0.95rem'}}>Phone: <span style={{color: theme.textSecondary}}>+91-7983359040</span></p>
           </div>
           <div style={{ display: 'flex', gap: '1.5rem', color: theme.textPrimary, marginBottom: '2.5rem' }}>
             <a href="https://github.com/reallymanya" target="_blank" rel="noreferrer" style={{ color: 'inherit', transition: 'transform 0.3s ease, color 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = '#FF8E3C'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = 'inherit'; }} aria-label="GitHub">
@@ -412,6 +494,11 @@ export default function Home() {
             <a href="https://www.linkedin.com/in/manya-takkar-395a67241/" target="_blank" rel="noreferrer" style={{ color: 'inherit', transition: 'transform 0.3s ease, color 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = '#FF8E3C'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = 'inherit'; }} aria-label="LinkedIn">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+            </a>
+            <a href="https://leetcode.com/u/Manyaa_28/" target="_blank" rel="noreferrer" style={{ color: 'inherit', transition: 'transform 0.3s ease, color 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.color = '#FF8E3C'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = 'inherit'; }} aria-label="LeetCode">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16.102 17.93l-2.697 2.607c-.466.467-1.111.662-1.823.662s-1.357-.195-1.824-.662l-4.332-4.363c-.467-.467-.702-1.15-.702-1.863s.235-1.396.702-1.863l4.332-4.363c.467-.467 1.112-.662 1.824-.662s1.357.195 1.823.662l2.697 2.606c.514.515 1.365.497 1.9-.046.536-.543.555-1.396.041-1.91l-2.964-2.864c-1.072-1.07-2.58-1.522-4.135-1.522s-3.064.453-4.136 1.522l-4.478 4.51c-1.072 1.07-1.637 2.55-1.637 4.103s.565 3.033 1.637 4.103l4.478 4.51c1.072 1.07 2.58 1.522 4.136 1.522s3.063-.453 4.135-1.522l2.964-2.865c.514-.514.495-1.366-.041-1.91-.535-.542-1.386-.56-1.9-.045zm1.902-7.535h-8.006c-.718 0-1.3.582-1.3 1.3s.582 1.3 1.3 1.3h8.006c.718 0 1.3-.582 1.3-1.3s-.582-1.3-1.3-1.3z"/>
               </svg>
             </a>
           </div>
